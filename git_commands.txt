@@ -1,0 +1,264 @@
+==============================================================================
+ git_commands.txt  -  Git & GitHub Workflow Assignment (SG2)
+ Name        : Ranveer Yashwinder Awasthi
+ Student ID  : 2024eb01062
+ Repository  : https://github.com/RanveerYashAwasthi/git-workflow-2024eb01062
+ Environment : Windows 11, Windows PowerShell, Git 2.43.0, GitHub CLI 2.103.3
+==============================================================================
+ All commands are listed in the order they were run, grouped by assignment
+ step. Each command has a short explanation. Commands marked (PowerShell)
+ are shell commands, not Git commands; they are listed for completeness.
+
+------------------------------------------------------------------------------
+ STEP 1 : LOCAL REPOSITORY SETUP
+------------------------------------------------------------------------------
+mkdir git-workflow-2024eb01062
+    (PowerShell) Creates the project folder on my local machine.
+
+cd git-workflow-2024eb01062
+    (PowerShell) Moves into the project folder so every later command runs
+    inside it.
+
+    -> index.html and about.html were then created in this folder (editor).
+
+ls
+    (PowerShell) Lists the folder contents to confirm both HTML files exist.
+
+git init -b main
+    Creates a new, empty Git repository in the current folder (the hidden
+    .git directory) and names the first branch "main".
+
+git config user.name "Ranveer Yashwinder Awasthi"
+    Sets the author name recorded in every commit of this repository
+    (repository-level setting, stored in .git/config).
+
+git config user.email "249699172+RanveerYashAwasthi@users.noreply.github.com"
+    Sets the author e-mail for this repository; this GitHub no-reply address
+    links the commits to my GitHub account RanveerYashAwasthi.
+
+git status
+    Shows the state of the working tree; both HTML files are "untracked".
+
+------------------------------------------------------------------------------
+ STEP 2 : GIT WORKFLOW EXECUTION
+------------------------------------------------------------------------------
+# 2.1  Record the initial state with a commit
+git add index.html about.html
+    Stages both files, i.e. adds them to the index (staging area) so they
+    are included in the next commit.
+
+git status
+    Confirms both files are listed under "Changes to be committed".
+
+git commit -m "Initial commit: add index.html and about.html"
+    Saves the staged snapshot as the first (root) commit; -m gives the
+    commit message on the command line.
+
+# 2.2  Modify an HTML file and create a second commit
+    -> index.html edited: navigation bar and welcome section added.
+
+git status
+    Shows index.html as "modified" but not yet staged.
+
+git diff
+    Shows the line-by-line changes between the working copy and the last
+    commit (+ added lines, - removed lines).
+
+git add index.html
+    Stages the modified index.html.
+
+git commit -m "Update index.html: add navigation bar and welcome section"
+    Creates the second commit containing the change to index.html.
+
+# 2.3  Create a new branch named feature
+git branch feature
+    Creates a new branch "feature" pointing at the current commit (it does
+    not switch to it).
+
+git branch
+    Lists local branches; "*" marks the branch currently checked out (main).
+
+# 2.4  Switch to the feature branch
+git switch feature
+    Switches HEAD and the working tree to the "feature" branch.
+    (Older equivalent: git checkout feature)
+
+git branch
+    Confirms "* feature" is now the current branch.
+
+# 2.5  Make changes and commit them to the feature branch
+    -> style.css created and linked from index.html and about.html.
+
+git status
+    Shows the two modified HTML files and the new untracked style.css.
+
+git add style.css index.html about.html
+    Stages the new stylesheet and both modified pages.
+
+git commit -m "Add style.css and link it in index.html and about.html"
+    First commit on the feature branch.
+
+    -> about.html edited: profile section added.
+
+git diff --stat
+    Summarises which files changed and by how many lines (no full diff).
+
+git commit -am "Add profile section to about.html"
+    -a automatically stages all modified tracked files, -m adds the message.
+    This is the second commit on the feature branch.
+
+git log --oneline
+    Shows the history of the current branch, one line per commit.
+
+# 2.6  Switch back to the main branch
+git switch main
+    Switches back to main; the feature work is not present here yet.
+
+git log --oneline
+    Confirms main still contains only its own two commits.
+
+# 2.7  Merge the feature branch into main
+git merge --no-ff feature -m "Merge branch 'feature' into main"
+    Merges feature into main. --no-ff forces a merge commit (instead of a
+    fast-forward) so the branch stays visible in the history.
+
+# 2.8  Display the commit history
+git log --oneline --graph --all --decorate
+    Shows the history of all branches as a text graph, with branch names,
+    so the branching and merging are clearly visible.
+
+git log --stat -n 3
+    Shows full details (hash, author, date, message, files changed) of the
+    last 3 commits.
+
+------------------------------------------------------------------------------
+ STEP 3 : .gitignore IMPLEMENTATION
+------------------------------------------------------------------------------
+Set-Content debug.log "2026-11-06 19:10:00 DEBUG application started"
+    (PowerShell) Creates a sample .log file to test the ignore rule.
+
+mkdir temp | Out-Null
+    (PowerShell) Creates the temp folder that will be ignored.
+
+Set-Content temp\cache.txt "temporary cache data"
+    (PowerShell) Creates a file inside temp/ to test the folder rule.
+
+git status
+    Before .gitignore: debug.log and temp/ show up as untracked files.
+
+    -> .gitignore created with the rules  *.log  and  temp/
+
+Get-Content .gitignore
+    (PowerShell) Prints the contents of .gitignore.
+
+git status
+    After .gitignore: only .gitignore itself is untracked; debug.log and
+    temp/ are no longer reported.
+
+git status --ignored
+    Also lists the ignored files, proving the rules are working.
+
+git check-ignore -v debug.log temp/cache.txt
+    Shows which .gitignore line (file:line:pattern) ignores each path.
+
+git add .gitignore
+    Stages the .gitignore file.
+
+git commit -m "Add .gitignore to ignore .log files and temp/ folder"
+    Commits .gitignore so the ignore rules are shared through the repository.
+
+------------------------------------------------------------------------------
+ STEP 4 : UNDO OPERATION USING GIT
+------------------------------------------------------------------------------
+    -> contact.html created.
+
+git add contact.html
+    Stages the new contact page.
+
+git commit -m "Add contact page"
+    The additional commit that is undone next.
+
+git log --oneline -3
+    Shows the last 3 commits; the newest is "Add contact page".
+
+ls -Name
+    (PowerShell) Lists file names only; contact.html is present.
+
+git revert HEAD --no-edit
+    Undoes the last commit (HEAD) by creating a NEW commit that reverses its
+    changes; --no-edit keeps the default message. History is not rewritten,
+    so this is safe for commits that are (or will be) pushed.
+
+git log --oneline --graph -6
+    Shows the revert commit on top of the original "Add contact page".
+
+ls -Name
+    (PowerShell) contact.html is gone from the working tree.
+
+git status
+    The working tree is clean after the revert.
+
+git show --stat HEAD
+    Shows the revert commit's details: contact.html deleted (14 lines).
+
+    (Alternative, not used: git reset --hard HEAD~1 moves the branch back
+    and deletes the commit from history; only safe for unpushed commits.)
+
+------------------------------------------------------------------------------
+ STEP 5 : GITHUB INTEGRATION
+------------------------------------------------------------------------------
+winget install --id GitHub.cli -e
+    (one-time setup) Installs the GitHub CLI tool "gh" on Windows.
+
+gh auth login
+    (one-time setup) Logs the GitHub CLI in to my GitHub account through the
+    browser.
+
+gh --version
+    Shows the installed GitHub CLI version.
+
+gh auth status
+    Confirms the CLI is logged in to github.com as RanveerYashAwasthi.
+
+gh repo create git-workflow-2024eb01062 --public --description "SG2 Git and GitHub workflow assignment by Ranveer Yashwinder Awasthi (2024eb01062)"
+    Creates a new, empty PUBLIC repository on GitHub under my account and
+    prints its URL.
+
+git remote add origin https://github.com/RanveerYashAwasthi/git-workflow-2024eb01062.git
+    Connects the local repository to the GitHub repository and names this
+    remote "origin".
+
+git remote -v
+    Lists the remote's fetch and push URLs to verify the connection.
+
+git push -u origin main
+    Uploads main and its complete history to GitHub; -u sets origin/main as
+    the upstream so a plain "git push" works later.
+
+git push -u origin feature
+    Uploads the feature branch to GitHub as well.
+
+git branch -a
+    Lists local branches and remote-tracking branches (remotes/origin/...).
+
+git log --oneline --graph --all --decorate
+    Confirms origin/main and origin/feature point to the same commits as the
+    local branches.
+
+------------------------------------------------------------------------------
+ STEP 6 : COMMAND DOCUMENTATION FILE
+------------------------------------------------------------------------------
+    -> this file (git_commands.txt) created.
+
+git add git_commands.txt
+    Stages this documentation file.
+
+git commit -m "Add git_commands.txt documenting all Git commands used"
+    Commits the documentation file to main.
+
+git push
+    Pushes the new commit to origin/main (upstream already set by -u).
+
+git log --oneline --graph --all --decorate
+    Shows the final history, with main and origin/main on the same commit.
+==============================================================================
