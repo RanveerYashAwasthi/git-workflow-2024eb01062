@@ -1,0 +1,25 @@
+/* Common stylesheet for all pages */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 16px;
+  line-height: 1.6;
+  color: #222;
+}
+
+nav {
+  background: #1f3b57;
+  padding: 10px 16px;
+  border-radius: 6px;
+}
+
+nav a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+h1 {
+  color: #1f3b57;
+}
